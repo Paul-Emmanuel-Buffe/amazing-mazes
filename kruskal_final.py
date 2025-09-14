@@ -415,7 +415,11 @@ class MazeGenerator:
         if self.maze_grid is None:
             print("Erreur: Aucun labyrinthe généré!")
             return
-            
+        
+        if self.n > 20:
+            print(f"Labyrinthe généré (taille {self.n}) – affichage désactivé car trop grand.")
+            return
+
         print("\n" + "="*50)
         print("LABYRINTHE GÉNÉRÉ")
         print("="*50)
@@ -423,9 +427,9 @@ class MazeGenerator:
             print(''.join(row))
         print("="*50 + "\n")
 
+
 if __name__ == "__main__":
     n = int(input("Quelle taille de labyrinthe : "))
-    filename = input("Nom du fichier : ")
     seed = input("Seed (optionnel, appuyez sur Entrée pour aléatoire) : ")
     
     generator = MazeGenerator(n)
@@ -437,6 +441,12 @@ if __name__ == "__main__":
     
     # Affichage du labyrinthe dans la console
     generator.print_maze()
+    
+    # Génération automatique du nom du fichier
+    save_dir = r"C:\Users\Windows\Desktop\projets\2a\amazing-mazes\kuskal_grids"
+    os.makedirs(save_dir, exist_ok=True)  # Crée le dossier s'il n'existe pas
+    
+    filename = os.path.join(save_dir, f"kruskal_grid_{n}.txt")
     
     # Sauvegarde dans un fichier
     generator.save_to_file(filename)
