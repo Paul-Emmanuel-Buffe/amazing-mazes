@@ -1,5 +1,7 @@
 import random
 import os
+from metrics_record import MetricsLogger
+
 
 class UnionFind:
     def __init__(self, n):
@@ -36,6 +38,7 @@ class MazeGenerator:
         self.n = n
         self.V = n * n
         self.maze_grid = None
+        self.metrics_logger = MetricsLogger(csv_file="constructors_metrics.csv") # permet d'effectuer la prise des métriques partout dans la classe
 
     def cell_to_index(self, row, col):
         return row * self.n + col
@@ -47,6 +50,9 @@ class MazeGenerator:
         - On les mélange
         - On applique Kruskal strict
         """
+        # démarrage de la prise des métriques
+        self.metrics_logger(self.n, "kruskal", seed)
+
         if seed is not None:
             random.seed(seed)
 
@@ -110,6 +116,9 @@ class MazeGenerator:
                 f.write(''.join(row) + '\n')
         print(f"Labyrinthe sauvegardé dans {filename}")
 
+        # Arrêt de la prise de métrique pour sauvegarde
+        self.metrics_logger.stop(filename)
+
     def print_maze(self):
         if self.maze_grid is None:
             print("Erreur: Aucun labyrinthe généré!")
@@ -119,7 +128,7 @@ class MazeGenerator:
             print(f"Labyrinthe généré (taille {self.n}) – affichage désactivé car trop grand.")
             return
         print("\n" + "="*50)
-        print("LABYRINTHE GÉNÉRÉ (Kruskal canonique)")
+        print("LABYRINTHE GÉNÉRÉ")
         print("="*50)
         for row in self.maze_grid:
             print(''.join(row))
@@ -128,7 +137,7 @@ class MazeGenerator:
 
 if __name__ == "__main__":
     n = int(input("Quelle taille de labyrinthe ?: "))
-    seed_input = input("Seed ? : ")
+    seed_input = input("Seed ? : ").strip() # nettoyage de l'entrée
 
     generator = MazeGenerator(n)
 
@@ -141,5 +150,5 @@ if __name__ == "__main__":
 
     save_dir = r"C:\Users\Windows\Desktop\projets\2a\amazing-mazes\kuskal_grids"
     os.makedirs(save_dir, exist_ok=True)
-    filename = os.path.join(save_dir, f"kruskal_canonical_{n}_{seed_input}.txt")
+    filename = os.path.join(save_dir, f"kruskal_strict_{n}_{seed_input}.txt")
     generator.save_to_file(filename)
