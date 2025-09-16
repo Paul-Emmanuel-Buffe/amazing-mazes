@@ -30,6 +30,7 @@ class UnionFind:
     def same_set(self, x, y):
         return self.find(x) == self.find(y)
 
+
 class MazeGenerator:
     def __init__(self, n):
         self.n = n
@@ -38,67 +39,57 @@ class MazeGenerator:
 
     def cell_to_index(self, row, col):
         return row * self.n + col
-        
-    def kruskal_maze_optimized(self, seed=None):
+
+    def kruskal_maze_canonical(self, seed=None):
         """
-        Version optimisée de kruskal_maze - 5x plus rapide pour n=10000
+        Version académique de Kruskal :
+        - On génère toutes les arêtes
+        - On les mélange
+        - On applique Kruskal strict
         """
         if seed is not None:
             random.seed(seed)
-        
+
         uf = UnionFind(self.V)
         selected_walls = []
         edges_added = 0
-        
-       
-        all_cells = list(range(self.V))
-        random.shuffle(all_cells)  
-        
-        for cell_index in all_cells:
-            if edges_added == self.V - 1:
-                break
-                
-            row = cell_index // self.n
-            col = cell_index % self.n
-            
-            #  Génère seulement les murs adjacents
-            adjacent_walls = []
-            
-            if col < self.n - 1:  # Mur à droite
-                right_index = self.cell_to_index(row, col + 1)
-                adjacent_walls.append((cell_index, right_index))
-            
-            if row < self.n - 1:  # Mur en bas
-                down_index = self.cell_to_index(row + 1, col)
-                adjacent_walls.append((cell_index, down_index))
-            
-            # Mélange aléatoire des murs adjacents (seulement 2 éléments max)
-            random.shuffle(adjacent_walls)
-            
-            for u, v in adjacent_walls:
-                if not uf.same_set(u, v):
-                    selected_walls.append([u, v])
-                    edges_added += 1
-                    uf.union(u, v)
-                    if edges_added == self.V - 1:
-                        break
-        
 
+        # 1) Génération de toutes les arêtes possibles (droite et bas seulement pour éviter doublons)
+        edges = []
+        for row in range(self.n):
+            for col in range(self.n):
+                u = self.cell_to_index(row, col)
+                if col < self.n - 1:  # mur à droite
+                    v = self.cell_to_index(row, col + 1)
+                    edges.append((u, v))
+                if row < self.n - 1:  # mur en bas
+                    v = self.cell_to_index(row + 1, col)
+                    edges.append((u, v))
+
+        # 2) Mélange aléatoire de toutes les arêtes
+        random.shuffle(edges)
+
+        # 3) Algorithme de Kruskal classique
+        for u, v in edges:
+            if uf.union(u, v):  # ajoute si pas de cycle
+                selected_walls.append([u, v])
+                edges_added += 1
+                if edges_added == self.V - 1:
+                    break
+
+        # 4) Construction de la grille
         self.create_maze_grid(selected_walls)
         return selected_walls
 
-
     def create_maze_grid(self, selected_edges):
-        # grille initiale avec tous les murs
         self.maze_grid = [['#' for _ in range(2*self.n+1)] for _ in range(2*self.n+1)]
 
-        # cellules de base => couloirs
         for row in range(1, 2*self.n, 2):
-            for col in range(1,2*self.n, 2):
-                self.maze_grid[row] [col] = '.'
+            for col in range(1, 2*self.n, 2):
+                self.maze_grid[row][col] = '.'
 
         # entrée et sortie
-        self.maze_grid[0][1]='.'
+        self.maze_grid[0][1] = '.'
         self.maze_grid[2*self.n][2*self.n-1] = '.'
 
         for u, v in selected_edges:
@@ -111,8 +102,8 @@ class MazeGenerator:
             wall_row = (u_display_row + v_display_row) // 2
             wall_col = (u_display_col + v_display_col) // 2
 
-            self.maze_grid[wall_row] [wall_col] = '.'
-    
+            self.maze_grid[wall_row][wall_col] = '.'
+
     def save_to_file(self, filename):
         with open(filename, 'w') as f:
             for row in self.maze_grid:
@@ -123,34 +114,32 @@ class MazeGenerator:
         if self.maze_grid is None:
             print("Erreur: Aucun labyrinthe généré!")
             return
-            
+
         if self.n > 20:
             print(f"Labyrinthe généré (taille {self.n}) – affichage désactivé car trop grand.")
             return
-
         print("\n" + "="*50)
-        print("LABYRINTHE GÉNÉRÉ")
+        print("LABYRINTHE GÉNÉRÉ (Kruskal canonique)")
         print("="*50)
         for row in self.maze_grid:
             print(''.join(row))
         print("="*50 + "\n")
 
+
 if __name__ == "__main__":
     n = int(input("Quelle taille de labyrinthe ?: "))
     seed_input = input("Seed ? : ")
-    
+
     generator = MazeGenerator(n)
-    
+
     if seed_input.strip():
-
-
-        generator.kruskal_maze_optimized(seed=int(seed_input))
+        generator.kruskal_maze_canonical(seed=int(seed_input))
     else:
-        generator.kruskal_maze_optimized()
-    
+        generator.kruskal_maze_canonical()
+
     generator.print_maze()
-    
+
     save_dir = r"C:\Users\Windows\Desktop\projets\2a\amazing-mazes\kuskal_grids"
     os.makedirs(save_dir, exist_ok=True)
-    filename = os.path.join(save_dir, f"kruskal_grid_{n}_{seed_input}.txt")
+    filename = os.path.join(save_dir, f"kruskal_canonical_{n}_{seed_input}.txt")
     generator.save_to_file(filename)
