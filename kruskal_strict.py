@@ -4,14 +4,18 @@ from metrics_record import MetricsLogger
 
 
 class UnionFind:
-    def __init__(self, n):
+    def __init__(self, n, metrics_logger=None):
         self.parent = list(range(n))
         self.rank = [0] * n
         self.components = n
-
+        self.metrics_logger = metrics_logger
+    
     def find(self, x):
         if self.parent[x] != x:
             self.parent[x] = self.find(self.parent[x])
+
+        if self.metrics_logger:
+            self.metrics_logger.increment_union_find_op()
         return self.parent[x]
 
     def union(self, x, y):
@@ -27,6 +31,9 @@ class UnionFind:
             self.parent[root_y] = root_x
             self.rank[root_x] += 1
         self.components -= 1
+
+        if self.metrics_logger:
+            self.metrics_logger.increment_union_find_op()
         return True
 
     def same_set(self, x, y):
@@ -38,7 +45,7 @@ class MazeGenerator:
         self.n = n
         self.V = n * n
         self.maze_grid = None
-        self.metrics_logger = MetricsLogger(csv_file="constructors_metrics.csv") # permet d'effectuer la prise des métriques partout dans la classe
+        self.metrics_logger = MetricsLogger(csv_file=r"C:\Users\Windows\Desktop\projets\2a\amazing-mazes\constructors_metrics.csv")
 
     def cell_to_index(self, row, col):
         return row * self.n + col
@@ -51,13 +58,13 @@ class MazeGenerator:
         - On applique Kruskal strict
         """
         # démarrage de la prise des métriques
-        self.metrics_logger(self.n, "kruskal", seed)
+        self.metrics_logger.start(self.n, "kruskal", seed)
 
         if seed is not None:
             random.seed(seed)
 
-        uf = UnionFind(self.V)
-        selected_walls = []
+        uf = UnionFind(self.V, self.metrics_logger)
+        selected_walls = []  
         edges_added = 0
 
         # 1) Génération de toutes les arêtes possibles (droite et bas seulement pour éviter doublons)
@@ -68,9 +75,12 @@ class MazeGenerator:
                 if col < self.n - 1:  # mur à droite
                     v = self.cell_to_index(row, col + 1)
                     edges.append((u, v))
+                    self.metrics_logger.increment_edge()
                 if row < self.n - 1:  # mur en bas
                     v = self.cell_to_index(row + 1, col)
                     edges.append((u, v))
+                    self.metrics_logger.increment_edge()
+
 
         # 2) Mélange aléatoire de toutes les arêtes
         random.shuffle(edges)
@@ -118,6 +128,9 @@ class MazeGenerator:
 
         # Arrêt de la prise de métrique pour sauvegarde
         self.metrics_logger.stop(filename)
+        
+        # impression des métriques enregistrée
+        self.metrics_logger.print_metrics()
 
     def print_maze(self):
         if self.maze_grid is None:
@@ -151,4 +164,7 @@ if __name__ == "__main__":
     save_dir = r"C:\Users\Windows\Desktop\projets\2a\amazing-mazes\kuskal_grids"
     os.makedirs(save_dir, exist_ok=True)
     filename = os.path.join(save_dir, f"kruskal_strict_{n}_{seed_input}.txt")
-    generator.save_to_file(filename)
+    generator.save_to_file(filename) # appel de la saugarde grille et csv
+
+
+

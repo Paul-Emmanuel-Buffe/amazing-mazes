@@ -98,3 +98,15 @@ class MetricsLogger:
             writer.writerow(row) # ajoute la ligne au csv
 
         self.start_time = None # remise de start à None => on peut relancer un nouveau test
+    
+    # impression en cosole des métriques relevées
+    def print_metrics(self):
+        print("\n" + "="*25)
+        print("RÉSUMÉ DES MÉTRIQUES")
+        print("="*25)
+
+        for col in self.current_metrics:
+            if col in self.current_metrics:
+                print(f"{col:>20}: {self.current_metrics[col]}")
+        
+        print("="*25 + "\n")
