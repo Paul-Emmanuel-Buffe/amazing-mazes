@@ -1,15 +1,21 @@
 import random
 import os
+from metrics_record import MetricsLogger
+
 
 class UnionFind:
-    def __init__(self, n):
+    def __init__(self, n, metrics_logger=None):
         self.parent = list(range(n))
         self.rank = [0] * n
         self.components = n
+        self.metrics_logger = metrics_logger
 
     def find(self, x):
         if self.parent[x] != x:
             self.parent[x] = self.find(self.parent[x])
+        
+        if self.metrics_logger:
+            self.metrics_logger.increment_union_find_op()
         return self.parent[x]
 
     def union(self, x, y):
@@ -25,6 +31,9 @@ class UnionFind:
             self.parent[root_y] = root_x
             self.rank[root_x] += 1
         self.components -= 1
+        
+        if self.metrics_logger:
+            self.metrics_logger.increment_union_find_op()
         return True
 
     def same_set(self, x, y):
@@ -35,6 +44,7 @@ class MazeGenerator:
         self.n = n
         self.V = n * n
         self.maze_grid = None
+        self.metrics_logger = MetricsLogger(csv_file=r"C:\Users\Windows\Desktop\projets\2a\amazing-mazes\constructors_metrics2.csv")
 
     def cell_to_index(self, row, col):
         return row * self.n + col
@@ -43,10 +53,13 @@ class MazeGenerator:
         """
         Version optimisée de kruskal_maze - 5x plus rapide pour n=10000
         """
+        # démarrage de la prise des métriques
+        self.metrics_logger.start(self.n, "kruskal_optimized", seed)
+        
         if seed is not None:
             random.seed(seed)
         
-        uf = UnionFind(self.V)
+        uf = UnionFind(self.V, self.metrics_logger)
         selected_walls = []
         edges_added = 0
         
@@ -67,10 +80,12 @@ class MazeGenerator:
             if col < self.n - 1:  # Mur à droite
                 right_index = self.cell_to_index(row, col + 1)
                 adjacent_walls.append((cell_index, right_index))
+                self.metrics_logger.increment_edge()
             
             if row < self.n - 1:  # Mur en bas
                 down_index = self.cell_to_index(row + 1, col)
                 adjacent_walls.append((cell_index, down_index))
+                self.metrics_logger.increment_edge()
             
             # Mélange aléatoire des murs adjacents (seulement 2 éléments max)
             random.shuffle(adjacent_walls)
@@ -118,6 +133,12 @@ class MazeGenerator:
             for row in self.maze_grid:
                 f.write(''.join(row) + '\n')
         print(f"Labyrinthe sauvegardé dans {filename}")
+        
+        # Arrêt de la prise de métrique pour sauvegarde
+        self.metrics_logger.stop(filename)
+        
+        # impression des métriques enregistrées
+        self.metrics_logger.print_metrics()
 
     def print_maze(self):
         if self.maze_grid is None:
@@ -125,7 +146,7 @@ class MazeGenerator:
             return
             
         if self.n > 20:
-            print(f"Labyrinthe généré (taille {self.n}) – affichage désactivé car trop grand.")
+            print(f"Labyrinthe généré (taille {self.n}) — affichage désactivé car trop grand.")
             return
 
         print("\n" + "="*50)
@@ -137,13 +158,11 @@ class MazeGenerator:
 
 if __name__ == "__main__":
     n = int(input("Quelle taille de labyrinthe ?: "))
-    seed_input = input("Seed ? : ")
+    seed_input = input("Seed ? : ").strip()  # nettoyage de l'entrée
     
     generator = MazeGenerator(n)
     
     if seed_input.strip():
-
-
         generator.kruskal_maze_optimized(seed=int(seed_input))
     else:
         generator.kruskal_maze_optimized()
@@ -152,5 +171,5 @@ if __name__ == "__main__":
     
     save_dir = r"C:\Users\Windows\Desktop\projets\2a\amazing-mazes\kuskal_grids"
     os.makedirs(save_dir, exist_ok=True)
-    filename = os.path.join(save_dir, f"kruskal_grid_{n}_{seed_input}.txt")
+    filename = os.path.join(save_dir, f"kruskal_optimized_{n}_{seed_input}")
     generator.save_to_file(filename)

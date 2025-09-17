@@ -164,7 +164,3 @@ if __name__ == "__main__":
     save_dir = r"C:\Users\Windows\Desktop\projets\2a\amazing-mazes\kuskal_grids"
     os.makedirs(save_dir, exist_ok=True)
     filename = os.path.join(save_dir, f"kruskal_strict_{n}_{seed_input}.txt")
-    generator.save_to_file(filename) # appel de la saugarde grille et csv
-
-
-
