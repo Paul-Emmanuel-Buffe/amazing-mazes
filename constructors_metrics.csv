@@ -419,6 +419,7 @@ timestamp,filename,maze_size,seed,algorithm,generation_time_ms,ram_peak_mb,file_
 2025-09-16 21:15:12,kruskal_strict_5000_18.txt,5000,18,kruskal,392067.67,2509.56,100040003,0,49990000,223310312
 2025-09-16 21:21:45,kruskal_strict_5000_19.txt,5000,19,kruskal,345326.4,2482.79,100040003,0,49990000,222750675
 2025-09-16 21:27:30,kruskal_strict_5000_20.txt,5000,20,kruskal,327965.96,2512.69,100040003,0,49990000,224542483
+<<<<<<< HEAD
 2025-09-17 19:13:21,recursive_maze_10_1,10,1,recursive_backtracking,1.16,17.62,483,8,99,0
 2025-09-17 19:13:21,recursive_maze_10_2,10,2,recursive_backtracking,1.04,17.65,483,9,99,0
 2025-09-17 19:13:21,recursive_maze_10_3,10,3,recursive_backtracking,1.74,17.65,483,8,99,0
@@ -721,3 +722,4 @@ timestamp,filename,maze_size,seed,algorithm,generation_time_ms,ram_peak_mb,file_
 2025-09-17 20:36:44,kruskal_strict_6000_28.txt,6000,28,kruskal,892314.9,2941.05,144048003,0,71988000,320773944
 2025-09-17 20:54:34,kruskal_strict_6000_98.txt,6000,98,kruskal,849848.42,2929.26,144048003,0,71988000,321075847
 2025-09-17 21:11:21,kruskal_strict_6000_150.txt,6000,150,kruskal,1933634.09,2936.69,144048003,0,71988000,319685606
+
