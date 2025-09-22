@@ -12,9 +12,10 @@ A comprehensive maze generation and solving system implementing multiple algorit
 5. [Usage](#usage)
 6. [Architecture](#architecture)
 7. [Performance Analysis](#performance-analysis)
-8. [Roadmap](#roadmap)
-9. [Contributors](#contributors)
-10. [License](#license)
+8. [Documentation](#documentation)
+9. [Roadmap](#roadmap)
+10. [Contributors](#contributors)
+11. [License](#license)
 
 ---
 
@@ -148,17 +149,20 @@ jupyter notebook amazing_mazes_report.ipynb
 ```
 amazing-mazes/
 ├── README.md                    # Project documentation
+├── __pycache__/                 # Python cache files
+├── amazing_mazes_report.ipynb   # Interactive analysis notebook
+├── amazing_mazes_report.pdf     # Complete performance analysis report
+├── anaconda_projects/           # Anaconda environment configurations
 ├── backtrack_constructor.py     # Recursive backtracking maze generator
+├── constructors_metrics.csv     # Generation algorithm performance data
+├── kruskal_grids/              # Generated mazes using Kruskal algorithm
 ├── kruskal_strict.py           # Kruskal algorithm maze generator
 ├── mazes_solvers.py            # Unified maze solving system
 ├── metrics_record.py           # Performance metrics collection
-├── solver_metric.py            # Solver performance analysis
-├── amazing_mazes_report.ipynb  # Comprehensive analysis notebook
-├── constructors_metrics.csv    # Generation algorithm performance data
-├── solver_metrics.csv          # Solving algorithm performance data
+├── pictures/                   # Visual outputs and maze images
 ├── recursive_grids/            # Generated mazes using recursive backtrack
-├── kuskal_grids/              # Generated mazes using Kruskal algorithm
-└── pictures/                   # Visual outputs and maze images
+├── solver_metric.py            # Solver performance analysis
+└── solver_metrics.csv          # Solving algorithm performance data
 ```
 
 **Core Components:**
@@ -178,7 +182,40 @@ The project includes comprehensive performance analysis comparing:
 - **Scalability:** Performance across maze sizes (1K to 100K cells)
 - **Complexity Analysis:** Time and space complexity measurements
 
-Key findings and detailed statistical analysis are available in `amazing_mazes_report.ipynb`.
+Key findings and detailed statistical analysis are available in both the interactive notebook (`amazing_mazes_report.ipynb`) and the complete PDF report (`amazing_mazes_report.pdf`).
+
+---
+
+## Documentation
+
+The project includes comprehensive documentation in multiple formats:
+
+### Interactive Analysis
+- **`amazing_mazes_report.ipynb`** - Jupyter notebook with executable code, interactive visualizations, and detailed analysis
+  - Real-time code execution
+  - Interactive plots and charts
+  - Step-by-step methodology explanation
+
+### Complete Report
+- **`amazing_mazes_report.pdf`** - Comprehensive performance analysis report
+  - Executive summary of findings
+  - Detailed algorithmic comparisons
+  - Statistical analysis and conclusions
+  - Performance benchmarks and recommendations
+  - Visual representations of all key metrics
+
+**Accessing the Documentation:**
+```bash
+# View interactive notebook
+jupyter notebook amazing_mazes_report.ipynb
+
+# View PDF report (requires PDF viewer)
+open amazing_mazes_report.pdf
+# or
+xdg-open amazing_mazes_report.pdf  # Linux
+# or
+start amazing_mazes_report.pdf     # Windows
+```
 
 ---
 
@@ -190,6 +227,7 @@ Key findings and detailed statistical analysis are available in `amazing_mazes_r
 - Multiple solving algorithms
 - Performance metrics collection
 - Statistical analysis framework
+- Comprehensive documentation (notebook + PDF report)
 
 ### Future Enhancements
 - Additional generation algorithms (Prim's, Wilson's)
